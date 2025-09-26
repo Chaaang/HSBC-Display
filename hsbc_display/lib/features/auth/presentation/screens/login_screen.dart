@@ -16,11 +16,17 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _usernameFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+  final FocusNode _buttonFocus = FocusNode();
   bool showForm = true;
   @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _usernameFocus.dispose();
+    _passwordFocus.dispose();
+    _buttonFocus.dispose();
     super.dispose();
   }
 
@@ -100,37 +106,97 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             SizedBox(height: 16),
                             // username
+                            // SizedBox(
+                            //   width: 300,
+                            //   child: Mytextfield(
+                            //     hintText: 'Username',
+                            //     obscureText: false,
+                            //     controller: _usernameController,
+                            //   ),
+                            // ),
+
                             SizedBox(
                               width: 300,
                               child: Mytextfield(
                                 hintText: 'Username',
                                 obscureText: false,
                                 controller: _usernameController,
+                                focusNode: _usernameFocus,
+                                textInputAction: TextInputAction.next,
+                                onSubmitted: (_) {
+                                  FocusScope.of(context)
+                                      .requestFocus(_passwordFocus);
+                                },
                               ),
                             ),
                             const SizedBox(height: 16),
 
                             // password
+
                             SizedBox(
                               width: 300,
                               child: Mytextfield(
                                 hintText: 'Password',
                                 obscureText: true,
                                 controller: _passwordController,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-
-                            // login button
-                            SizedBox(
-                              width: 300,
-                              child: MyButton(
-                                text: 'Login',
-                                onTap: () {
-                                  login();
+                                focusNode: _passwordFocus,
+                                textInputAction: TextInputAction.done,
+                                onSubmitted: (_) {
+                                  FocusScope.of(context)
+                                      .requestFocus(_buttonFocus);
                                 },
                               ),
                             ),
+                            // SizedBox(
+                            //   width: 300,
+                            //   child: Mytextfield(
+                            //     hintText: 'Password',
+                            //     obscureText: true,
+                            //     controller: _passwordController,
+                            //   ),
+                            // ),
+                            const SizedBox(height: 24),
+
+                            // login button
+
+                            SizedBox(
+                              width: 350,
+                              child: Focus(
+                                focusNode: _buttonFocus,
+                                child: Builder(
+                                  builder: (context) {
+                                    final hasFocus = Focus.of(context).hasFocus;
+                                    return ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: hasFocus
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withOpacity(0.9)
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 18),
+                                        textStyle:
+                                            const TextStyle(fontSize: 20),
+                                      ),
+                                      onPressed: login,
+                                      child: const Text('Login'),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            // SizedBox(
+                            //   width: 300,
+                            //   child: MyButton(
+                            //     text: 'Login',
+                            //     onTap: () {
+                            //       login();
+                            //     },
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
