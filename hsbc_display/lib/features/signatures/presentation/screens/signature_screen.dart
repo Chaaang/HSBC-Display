@@ -9,6 +9,7 @@ import 'package:hsbc_display/features/signatures/presentation/cubit/signature_cu
 import 'package:hsbc_display/features/signatures/presentation/cubit/signature_state.dart';
 
 import '../../../event/presentation/cubit/event_cubit.dart';
+import '../components/test.dart';
 
 class SignatureScreen extends StatefulWidget {
   const SignatureScreen({super.key});
@@ -75,6 +76,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
               signatures: signatures,
               background: bg,
             );
+            //return MessyNoOverlapRectangles();
           } else {
             return const Center(child: Text('Unknown state'));
           }

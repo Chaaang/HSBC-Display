@@ -620,7 +620,7 @@ library;
 
 //     for (final i in indices) {
 //       if (!mounted) return;
-//       await Future.delayed(const Duration(milliseconds: 500));
+//       await Future.delayed(const Duration(seconds: 2));
 //       setState(() => _visibleSignatures[i] = true);
 //     }
 
@@ -631,11 +631,11 @@ library;
 //       ..shuffle(_random);
 //     for (final i in fadeOutIndices) {
 //       if (!mounted) return;
-//       await Future.delayed(const Duration(milliseconds: 100));
+//       await Future.delayed(const Duration(seconds: 3));
 //       setState(() => _visibleSignatures[i] = false);
 //     }
 
-//     await Future.delayed(const Duration(milliseconds: 300));
+//     await Future.delayed(const Duration(seconds: 3));
 //     if (!mounted) return;
 
 //     _computeSpots();
@@ -686,7 +686,8 @@ library;
 //     );
 //   }
 // }
-/////1231231323
+/////FINAL IS BOVE
+///
 // import 'dart:async';
 // import 'dart:math';
 // import 'package:flutter/material.dart';
@@ -1562,6 +1563,217 @@ library;
 //     );
 //   }
 // }
+
+// import 'dart:async';
+// import 'dart:math';
+// import 'package:flutter/material.dart';
+// import '../../domain/entities/signature_url.dart';
+
+// class RandomSignatureScreen extends StatefulWidget {
+//   final List<SignatureUrl> signatures;
+//   final String background;
+
+//   const RandomSignatureScreen({
+//     super.key,
+//     required this.signatures,
+//     required this.background,
+//   });
+
+//   @override
+//   State<RandomSignatureScreen> createState() => _RandomSignatureScreenState();
+// }
+
+// class _RandomSignatureScreenState extends State<RandomSignatureScreen> {
+//   final Random _random = Random();
+//   late List<SignatureUrl> _currentSignatures;
+//   late List<bool> _visibleSignatures;
+
+//   // Spots now hold pos, width, height, and rotation
+//   late List<_Spot> _spots;
+
+//   // Base signature size
+//   late double _sigWidth;
+//   late double _sigHeight;
+//   late int _maxDisplay;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _currentSignatures = [];
+//     _visibleSignatures = [];
+//     _spots = [];
+//   }
+
+//   @override
+//   void didChangeDependencies() {
+//     super.didChangeDependencies();
+//     _computeImageSizeAndMaxDisplay();
+//     _computeSpots();
+//     _prepareNextSet();
+//     _animateSignaturesSequentially();
+//   }
+
+//   /// Compute base signature size and maximum number to display
+//   void _computeImageSizeAndMaxDisplay() {
+//     final size = MediaQuery.of(context).size;
+//     final padding = 10.0;
+//     const maxSigWidth = 120.0;
+//     const maxSigHeight = 120.0;
+
+//     final cols = ((size.width - padding) / (maxSigWidth + padding)).floor();
+//     final rows = ((size.height - padding) / (maxSigHeight + padding)).floor();
+
+//     _sigWidth = (size.width - padding * (cols + 1)) / cols;
+//     _sigHeight = (size.height - padding * (rows + 1)) / rows;
+
+//     _maxDisplay = cols * rows;
+//   }
+
+//   /// Generate free random positions, sizes, and rotations
+//   void _computeSpots() {
+//     final size = MediaQuery.of(context).size;
+//     final padding = 10.0;
+//     final placedRects = <Rect>[];
+//     _spots = [];
+
+//     final maxAttempts = 5000; // try harder to fill
+//     int attempts = 0;
+
+//     while (_spots.length < _maxDisplay && attempts < maxAttempts) {
+//       attempts++;
+
+//       // Random width/height variation (70%–150%)
+//       final w = (_sigWidth * (0.7 + _random.nextDouble() * 0.8));
+//       final h = (_sigHeight * (0.7 + _random.nextDouble() * 0.8));
+
+//       // Random position
+//       double dx =
+//           padding + _random.nextDouble() * (size.width - w - padding * 2);
+//       double dy =
+//           padding + _random.nextDouble() * (size.height - h - padding * 2);
+
+//       // Clamp so the image stays fully inside
+//       dx = dx.clamp(padding, size.width - w - padding);
+//       dy = dy.clamp(padding, size.height - h - padding);
+
+//       final rect = Rect.fromLTWH(dx, dy, w, h);
+
+//       // Allow closer spacing (looser overlap rule)
+//       if (placedRects.any((r) => r.overlaps(rect.inflate(0.5)))) {
+//         continue;
+//       }
+
+//       placedRects.add(rect);
+
+//       // Random rotation ±20°
+//       final rotation = (_random.nextDouble() * 40 - 20) * (pi / 180);
+
+//       _spots.add(_Spot(Offset(dx, dy), w, h, rotation));
+//     }
+//   }
+
+//   /// Assign images to the spots
+//   void _prepareNextSet() {
+//     final n = min(widget.signatures.length, _spots.length);
+//     _currentSignatures = List.from(widget.signatures)..shuffle(_random);
+//     _currentSignatures = _currentSignatures.take(n).toList();
+//     _visibleSignatures = List.filled(n, false);
+//   }
+
+//   /// Animate signatures fading in and out
+//   Future<void> _animateSignaturesSequentially() async {
+//     final indices = List.generate(_visibleSignatures.length, (i) => i)
+//       ..shuffle(_random);
+
+//     // Fade in
+//     for (final i in indices) {
+//       if (!mounted) return;
+//       await Future.delayed(const Duration(milliseconds: 1500));
+//       setState(() => _visibleSignatures[i] = true);
+//     }
+
+//     // Wait while all are visible
+//     await Future.delayed(const Duration(seconds: 5));
+//     if (!mounted) return;
+
+//     // Fade out
+//     final fadeOutIndices = List.generate(_visibleSignatures.length, (i) => i)
+//       ..shuffle(_random);
+//     for (final i in fadeOutIndices) {
+//       if (!mounted) return;
+//       await Future.delayed(const Duration(milliseconds: 1500));
+//       setState(() => _visibleSignatures[i] = false);
+//     }
+
+//     // Wait before reshuffle
+//     await Future.delayed(const Duration(seconds: 3));
+//     if (!mounted) return;
+
+//     // New scatter each cycle
+//     _computeSpots();
+//     _prepareNextSet();
+//     await _animateSignaturesSequentially();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Stack(
+//       children: [
+//         // Background image
+//         Positioned.fill(
+//           child:
+//               widget.background.isNotEmpty
+//                   ? Image.network(
+//                     'https://sign.onecodephoto.com/${widget.background}',
+//                     fit: BoxFit.cover,
+//                   )
+//                   : const SizedBox.shrink(),
+//         ),
+//         // Signatures
+//         ...List.generate(min(_visibleSignatures.length, _spots.length), (
+//           index,
+//         ) {
+//           final spot = _spots[index];
+//           final sig = _currentSignatures[index];
+
+//           return AnimatedPositioned(
+//             duration: const Duration(milliseconds: 300),
+//             left: spot.pos.dx,
+//             top: spot.pos.dy,
+//             width: spot.width,
+//             height: spot.height,
+//             child: AnimatedOpacity(
+//               duration: const Duration(milliseconds: 300),
+//               opacity: _visibleSignatures[index] ? 1.0 : 0.0,
+//               child: Transform.rotate(
+//                 angle: spot.rotation,
+//                 child: Image.network(
+//                   'https://sign.onecodephoto.com${sig.filename}',
+//                   fit: BoxFit.contain,
+//                   errorBuilder:
+//                       (_, __, ___) => Container(color: Colors.grey[200]),
+//                 ),
+//               ),
+//             ),
+//           );
+//         }),
+//       ],
+//     );
+//   }
+// }
+
+// /// Helper class to store spot info
+// class _Spot {
+//   final Offset pos;
+//   final double width;
+//   final double height;
+//   final double rotation;
+
+//   _Spot(this.pos, this.width, this.height, this.rotation);
+// }
+
+//
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -1585,9 +1797,7 @@ class _RandomSignatureScreenState extends State<RandomSignatureScreen> {
   final Random _random = Random();
   late List<SignatureUrl> _currentSignatures;
   late List<bool> _visibleSignatures;
-  late List<Offset> _spots;
-  late double _sigWidth;
-  late double _sigHeight;
+  late List<_Spot> _spots;
 
   @override
   void initState() {
@@ -1600,64 +1810,56 @@ class _RandomSignatureScreenState extends State<RandomSignatureScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _computeImageSizeAndSpots();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _setupAndAnimate();
+      }
+    });
+  }
+
+  void _setupAndAnimate() {
+    final size = MediaQuery.of(context).size;
+    _computeSpots(size);
     _prepareNextSet();
     _animateSignaturesSequentially();
   }
 
-  /// Compute signature size and safe positions (no cut)
-  void _computeImageSizeAndSpots() {
-    final size = MediaQuery.of(context).size;
-    final padding = 5.0;
-    final maxSigWidth = 120.0;
-    final maxSigHeight = 120.0;
-
-    double sigWidth = maxSigWidth;
-    double sigHeight = maxSigHeight;
-
-    int cols = ((size.width - padding) / (sigWidth + padding)).floor();
-    int rows = ((size.height - padding) / (sigHeight + padding)).floor();
-
-    if (cols > 0) sigWidth = (size.width - padding * (cols + 1)) / cols;
-    if (rows > 0) sigHeight = (size.height - padding * (rows + 1)) / rows;
-
-    _sigWidth = sigWidth;
-    _sigHeight = sigHeight;
-
-    _spots = [];
+  void _computeSpots(Size size) {
+    final safeMargin = 40.0; // keep border so images don't get cut off
     final placedRects = <Rect>[];
+    _spots = [];
 
-    for (int r = 0; r < rows; r++) {
-      for (int c = 0; c < cols; c++) {
-        double dx = padding + c * (sigWidth + padding);
-        double dy = padding + r * (sigHeight + padding);
+    final maxDisplay = min(widget.signatures.length, 100); // max 100
+    final maxAttempts = 5000;
+    int attempts = 0;
 
-        // Maximum safe offset for inner rows/columns
-        double maxOffsetX = max(0, size.width - sigWidth - dx - padding);
-        double maxOffsetY = max(0, size.height - sigHeight - dy - padding);
+    while (_spots.length < maxDisplay && attempts < maxAttempts) {
+      attempts++;
 
-        if (c < cols - 1 && maxOffsetX > 0)
-          dx += _random.nextDouble() * min(sigWidth * 0.15, maxOffsetX);
-        if (r < rows - 1 && maxOffsetY > 0)
-          dy += _random.nextDouble() * min(sigHeight * 0.15, maxOffsetY);
+      // random rectangle size (smaller to fit up to 100)
+      final w = 80 + _random.nextDouble() * 60; // between 80–140
+      final h = 60 + _random.nextDouble() * 50; // between 60–110
 
-        // Skip if this spot would be partially off-screen
-        if (dx + sigWidth > size.width - padding ||
-            dy + sigHeight > size.height - padding) {
-          continue;
-        }
+      final dx =
+          safeMargin + _random.nextDouble() * (size.width - w - safeMargin * 2);
+      final dy =
+          safeMargin +
+          _random.nextDouble() * (size.height - h - safeMargin * 2);
 
-        final rect = Rect.fromLTWH(dx, dy, sigWidth, sigHeight);
+      final rect = Rect.fromLTWH(dx, dy, w, h);
 
-        if (placedRects.any((r) => r.overlaps(rect))) continue;
-
-        placedRects.add(rect);
-        _spots.add(Offset(dx, dy));
+      if (placedRects.any((r) => r.overlaps(rect.inflate(4)))) {
+        continue; // skip if overlaps
       }
+
+      placedRects.add(rect);
+
+      final rotation = (_random.nextDouble() * 40 - 20) * (pi / 180);
+
+      _spots.add(_Spot(Offset(dx, dy), w, h, rotation));
     }
   }
 
-  /// Assign images to the spots safely
   void _prepareNextSet() {
     final n = min(widget.signatures.length, _spots.length);
     _currentSignatures = List.from(widget.signatures)..shuffle(_random);
@@ -1665,79 +1867,92 @@ class _RandomSignatureScreenState extends State<RandomSignatureScreen> {
     _visibleSignatures = List.filled(n, false);
   }
 
-  /// Animate images fading in and out
   Future<void> _animateSignaturesSequentially() async {
     final indices = List.generate(_visibleSignatures.length, (i) => i)
       ..shuffle(_random);
 
+    // Fade in one by one
     for (final i in indices) {
       if (!mounted) return;
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 1500));
       setState(() => _visibleSignatures[i] = true);
     }
 
+    // Show all for 10 seconds
     await Future.delayed(const Duration(seconds: 10));
     if (!mounted) return;
 
-    final fadeOutIndices = List.generate(_visibleSignatures.length, (i) => i)
-      ..shuffle(_random);
-    for (final i in fadeOutIndices) {
-      if (!mounted) return;
-      await Future.delayed(const Duration(milliseconds: 100));
-      setState(() => _visibleSignatures[i] = false);
-    }
+    // Fade out all at once
+    setState(() {
+      for (int i = 0; i < _visibleSignatures.length; i++) {
+        _visibleSignatures[i] = false;
+      }
+    });
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
 
-    _computeImageSizeAndSpots();
+    // Shuffle again and restart
+    final size = MediaQuery.of(context).size;
+    _computeSpots(size);
     _prepareNextSet();
     await _animateSignaturesSequentially();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // Background
-        Positioned.fill(
-          child:
-              widget.background.isNotEmpty
-                  ? Image.network(
-                    'https://sign.onecodephoto.com/${widget.background}',
-                    fit: BoxFit.cover,
-                  )
-                  : const SizedBox.shrink(),
-        ),
-        // Signatures
-        ...List.generate(min(_visibleSignatures.length, _spots.length), (
-          index,
-        ) {
-          final pos = _spots[index];
-          final sig = _currentSignatures[index];
-
-          return AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            left: pos.dx,
-            top: pos.dy,
-            width: _sigWidth,
-            height: _sigHeight,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: _visibleSignatures[index] ? 1.0 : 0.0,
-              child: Container(
-                color: Colors.black,
-                child: Image.network(
-                  'https://sign.onecodephoto.com${sig.filename}',
-                  fit: BoxFit.contain,
-                  errorBuilder:
-                      (_, __, ___) => Container(color: Colors.grey[200]),
-                ),
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child:
+                  widget.background.isNotEmpty
+                      ? Image.network(
+                        'https://sign.onecodephoto.com/${widget.background}',
+                        fit: BoxFit.cover,
+                      )
+                      : const SizedBox.shrink(),
             ),
-          );
-        }),
-      ],
+            ...List.generate(min(_visibleSignatures.length, _spots.length), (
+              index,
+            ) {
+              final spot = _spots[index];
+              final sig = _currentSignatures[index];
+
+              return AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                left: spot.pos.dx,
+                top: spot.pos.dy,
+                width: spot.width,
+                height: spot.height,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: _visibleSignatures[index] ? 1.0 : 0.0,
+                  child: Transform.rotate(
+                    angle: spot.rotation,
+                    child: Image.network(
+                      'https://sign.onecodephoto.com${sig.filename}',
+                      fit: BoxFit.contain,
+                      errorBuilder:
+                          (_, __, ___) => Container(color: Colors.grey[200]),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
+        );
+      },
     );
   }
+}
+
+class _Spot {
+  final Offset pos;
+  final double width;
+  final double height;
+  final double rotation;
+
+  _Spot(this.pos, this.width, this.height, this.rotation);
 }
