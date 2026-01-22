@@ -9,7 +9,6 @@ import 'package:hsbc_display/features/signatures/presentation/cubit/signature_cu
 import 'package:hsbc_display/features/signatures/presentation/cubit/signature_state.dart';
 
 import '../../../event/presentation/cubit/event_cubit.dart';
-import '../components/test.dart';
 
 class SignatureScreen extends StatefulWidget {
   const SignatureScreen({super.key});
@@ -36,14 +35,29 @@ class _SignatureScreenState extends State<SignatureScreen> {
     final signId = eventCubit.currentEvent!.id;
     final bg = eventCubit.currentEvent!.signsShowBg;
     time = int.parse(eventCubit.currentEvent!.listRefreshSecods);
-    context.read<SignatureCubit>().getSignatures(signId, bg);
+
+    var fadeInSec = eventCubit.currentEvent!.fadeInSeconds;
+    var freezeInSec = eventCubit.currentEvent!.freezeInSeconds;
+    context.read<SignatureCubit>().getSignatures(
+      signId,
+      bg,
+      fadeInSec,
+      freezeInSec,
+    );
   }
 
   void _refreshSignatures() {
     final eventCubit = context.read<EventCubit>();
     final signId = eventCubit.currentEvent!.id;
     final bg = eventCubit.currentEvent!.signsShowBg;
-    context.read<SignatureCubit>().refreshSignatures(signId, bg);
+    var fadeInSec = eventCubit.currentEvent!.fadeInSeconds;
+    var freezeInSec = eventCubit.currentEvent!.freezeInSeconds;
+    context.read<SignatureCubit>().refreshSignatures(
+      signId,
+      bg,
+      fadeInSec,
+      freezeInSec,
+    );
   }
 
   @override
@@ -71,12 +85,15 @@ class _SignatureScreenState extends State<SignatureScreen> {
           } else if (state is SignatureLoadedState) {
             final List<SignatureUrl> signatures = state.signature;
             final String bg = state.background;
+            int fadeInSec = int.parse(state.fadeInSeconds);
+            int freezeSec = int.parse(state.freezeInSeconds);
 
             return RandomSignatureScreen(
               signatures: signatures,
               background: bg,
+              fadeInSec: fadeInSec,
+              freezeInSec: freezeSec,
             );
-            //return MessyNoOverlapRectangles();
           } else {
             return const Center(child: Text('Unknown state'));
           }

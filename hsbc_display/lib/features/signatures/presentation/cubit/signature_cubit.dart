@@ -7,14 +7,19 @@ class SignatureCubit extends Cubit<SignatureState> {
   SignatureCubit({required this.signatureRepo})
     : super(SignatureInitialState());
 
-  Future<void> getSignatures(String signId, String background) async {
+  Future<void> getSignatures(
+    String signId,
+    String background,
+    String fadeInSec,
+    String freezeInSec,
+  ) async {
     try {
       emit(SignatureLoadingState());
 
       final items = await signatureRepo.getSignatures(signId);
 
       if (items.isNotEmpty) {
-        emit(SignatureLoadedState(items, background));
+        emit(SignatureLoadedState(items, background, fadeInSec, freezeInSec));
       } else {
         emit(SignatureEmptyState());
       }
@@ -23,12 +28,17 @@ class SignatureCubit extends Cubit<SignatureState> {
     }
   }
 
-  Future<void> refreshSignatures(String signId, String background) async {
+  Future<void> refreshSignatures(
+    String signId,
+    String background,
+    String fadeInSec,
+    freezeInSec,
+  ) async {
     try {
       final items = await signatureRepo.getSignatures(signId);
 
       if (items.isNotEmpty) {
-        emit(SignatureLoadedState(items, background));
+        emit(SignatureLoadedState(items, background, fadeInSec, freezeInSec));
       } else {
         emit(SignatureEmptyState());
       }

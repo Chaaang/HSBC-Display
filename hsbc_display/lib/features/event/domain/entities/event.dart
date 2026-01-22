@@ -6,6 +6,8 @@ class Event {
   String signsBackground;
   String signsShowBg;
   String listRefreshSecods;
+  String fadeInSeconds;
+  String freezeInSeconds;
 
   Event({
     required this.id,
@@ -15,6 +17,8 @@ class Event {
     required this.signsBackground,
     required this.signsShowBg,
     required this.listRefreshSecods,
+    required this.fadeInSeconds,
+    required this.freezeInSeconds,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class Event {
       signsBackground: json['signs_background'] ?? '',
       signsShowBg: json['signs_showbg'] ?? '',
       listRefreshSecods: json['lists_refresh_seconds'] ?? '',
+      fadeInSeconds: json['fadein_seconds'] ?? '',
+      freezeInSeconds: json['freeze_seconds'] ?? '',
     );
   }
 }

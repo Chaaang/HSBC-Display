@@ -7,8 +7,15 @@ class SignatureInitialState extends SignatureState {}
 class SignatureLoadedState extends SignatureState {
   List<SignatureUrl> signature;
   String background;
+  String fadeInSeconds;
+  String freezeInSeconds;
 
-  SignatureLoadedState(this.signature, this.background);
+  SignatureLoadedState(
+    this.signature,
+    this.background,
+    this.fadeInSeconds,
+    this.freezeInSeconds,
+  );
 }
 
 class SignatureLoadingState extends SignatureState {}
