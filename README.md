@@ -8,4 +8,6 @@ The application receives and displays all submitted signatures on a large screen
 
 <img width="2360" height="1640" alt="Simulator Screenshot - iPad (10th generation) - 2026-09-18 at 13 36 30" src="https://github.com/user-attachments/assets/d0b7d1fe-1260-4157-b4db-69c0586e3647" />
 
+**TESTING**
+
 <img width="2360" height="1640" alt="Simulator Screenshot - iPad (10th generation) - 2026-09-18 at 13 52 46" src="https://github.com/user-attachments/assets/1b313419-4b12-4a3d-971c-720a2be2fdb6" />
